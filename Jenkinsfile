@@ -13,9 +13,9 @@ pipeline {
         }
         stage('Build') {
             steps {
-				sh 'docker --version'
-                sh 'docker build -t IMAGE_NAME:IMAGE_TAG .'   //podman build command builds the image by tagging image with name and buildnumber, . sends all files to Daemon to execute
-                sh 'docker images | grep demo-app'
+				sh 'podman --version'
+                sh 'podman build -t IMAGE_NAME:IMAGE_TAG .'   //podman build command builds the image by tagging image with name and buildnumber, . sends all files to Daemon to execute
+                sh 'podman images'
             }
         }
     }
