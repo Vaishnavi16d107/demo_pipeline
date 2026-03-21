@@ -13,7 +13,6 @@ pipeline {
         }
 		stage('Podman Test') {
             steps {
-                sh 'ldd /usr/bin/podman'  //Shows all library dependencies
                 sh 'podman --version'     
             }
         }
