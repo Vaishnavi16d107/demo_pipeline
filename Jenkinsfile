@@ -1,7 +1,7 @@
 pipeline {
     agent any
 	environment {
-        IMAGE_NAME = "demo-app"
+        IMAGE_NAME = 'demo-app'
         IMAGE_TAG = "${BUILD_NUMBER}"
     }
     stages {
@@ -18,7 +18,7 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh 'podman build -t IMAGE_NAME:IMAGE_TAG .'   //podman build command builds the image by tagging image with name and buildnumber, . sends all files to Daemon to execute
+                sh 'podman build -t ${IMAGE_NAME}:${IMAGE_TAG} .'   //podman build command builds the image by tagging image with name and buildnumber, . sends all files to Daemon to execute
                 sh 'podman images'
             }
         }
