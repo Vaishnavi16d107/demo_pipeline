@@ -3,8 +3,7 @@ pipeline {
 	environment {
         IMAGE_NAME = 'demo-app'
         IMAGE_TAG = "${BUILD_NUMBER}"
-		ARTIFACTORY_URL="host.containers.internal:8082"
-        ARTIFACTORY_CREDS = "artifactory-creds"
+	    ARTIFACTORY_CREDS = "artifactory-creds"
     }
     stages {
         stage('Checkout') {     // Phase 1: Get code from GitHub
@@ -26,6 +25,12 @@ pipeline {
             }
         }
 		stage('Login to Artifactory') {
+			steps{
+				   script{
+					       env.ARTIFACTORY_URL=sh(script: 'hostname -I | awk "{print \$1}" || echo "host.containers.internal"', returnStdout: true).trim()
+						}
+				}
+												  
             steps {
 				echo "${ARTIFACTORY_URL}"
                 withCredentials([usernamePassword(
