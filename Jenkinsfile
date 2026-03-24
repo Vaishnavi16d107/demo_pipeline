@@ -36,7 +36,7 @@ pipeline {
                     passwordVariable: 'ART_PASS'
                 )]) {
                     sh '''
-                        echo "$ART_PASS" | podman login ${ARTIFACTORY_URL} -u "$ART_USER" --password-stdin --tls-verify=false  
+                        echo "$ART_PASS" | podman login ${ARTIFACTORY_URL}:8082 -u "$ART_USER" --password-stdin --tls-verify=false  
                     '''
 					//password is securely piped for sign in ART_PASS is local inside the function
                 }
@@ -44,12 +44,12 @@ pipeline {
         }
 		stage('Tag Image') {
             steps {
-                sh "podman tag ${IMAGE_NAME}:${IMAGE_TAG} ${ARTIFACTORY_URL}/${IMAGE_NAME}:${IMAGE_TAG}"
+                sh "podman tag ${IMAGE_NAME}:${IMAGE_TAG} ${ARTIFACTORY_URL}:8082/docker-local/${IMAGE_NAME}:${IMAGE_TAG}"
             }
         }
 		 stage('Push Image') {
             steps {
-                sh "podman push ${ARTIFACTORY_URL}/${IMAGE_NAME}:${IMAGE_TAG} --tls-verify=false"
+                sh "podman push ${ARTIFACTORY_URL}:8082/docker-local/${IMAGE_NAME}:${IMAGE_TAG} --tls-verify=false"
 				echo "pushed image"
             }
         }
