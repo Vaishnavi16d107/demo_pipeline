@@ -3,7 +3,7 @@ pipeline {
 	environment {
         IMAGE_NAME = 'demo-app'
         IMAGE_TAG = "${BUILD_NUMBER}"
-		//ARTIFACTORY_REGISTRY = "localhost:8082/docker-local
+		ARTIFACTORY_URL="host.containers.internal:8082"
         ARTIFACTORY_CREDS = "artifactory-creds"
     }
     stages {
@@ -27,7 +27,6 @@ pipeline {
         }
 		stage('Login to Artifactory') {
             steps {
-				env.ARTIFACTORY_URL='host.containers.internal:8082'
 				echo "${ARTIFACTORY_URL}"
                 withCredentials([usernamePassword(
                     credentialsId: "${ARTIFACTORY_CREDS}",
