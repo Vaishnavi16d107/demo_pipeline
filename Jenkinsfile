@@ -25,13 +25,10 @@ pipeline {
             }
         }
 		stage('Login to Artifactory') {
-			steps{
-				   script{
+		    steps {
+				script{
 					       env.ARTIFACTORY_URL=sh(script: 'hostname -I | awk "{print \$1}" || echo "host.containers.internal"', returnStdout: true).trim()
-						}
-				}
-												  
-            steps {
+					}
 				echo "${ARTIFACTORY_URL}"
                 withCredentials([usernamePassword(
                     credentialsId: "${ARTIFACTORY_CREDS}",
