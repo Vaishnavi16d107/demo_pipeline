@@ -3,7 +3,7 @@ pipeline {
 	environment {
         IMAGE_NAME = 'demo-app'
         IMAGE_TAG = "${BUILD_NUMBER}"
-		ARTIFACTORY_REGISTRY = "localhost:8082/docker-local"
+		//ARTIFACTORY_REGISTRY = "localhost:8082/docker-local
         ARTIFACTORY_CREDS = "artifactory-creds"
     }
     stages {
@@ -27,13 +27,15 @@ pipeline {
         }
 		stage('Login to Artifactory') {
             steps {
+				env.ARTIFACTORY_URL='host.containers.internal:8082'
+				echo "${ARTIFACTORY_URL}"
                 withCredentials([usernamePassword(
                     credentialsId: "${ARTIFACTORY_CREDS}",
                     usernameVariable: 'ART_USER',
                     passwordVariable: 'ART_PASS'
                 )]) {
                     sh '''
-                        echo "$ART_PASS" | podman login localhost:8082 -u "$ART_USER" --password-stdin --tls-verify=false  
+                        echo "$ART_PASS" | podman login ${ARTIFACTORY_URL} -u "$ART_USER" --password-stdin --tls-verify=false  
                     '''
 					//password is securely piped for sign in ART_PASS is local inside the function
                 }
@@ -41,12 +43,12 @@ pipeline {
         }
 		stage('Tag Image') {
             steps {
-                sh "podman tag ${IMAGE_NAME}:${IMAGE_TAG} ${ARTIFACTORY_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+                sh "podman tag ${IMAGE_NAME}:${IMAGE_TAG} ${ARTIFACTORY_URL}/${IMAGE_NAME}:${IMAGE_TAG}"
             }
         }
 		 stage('Push Image') {
             steps {
-                sh "podman push ${ARTIFACTORY_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} --tls-verify=false"
+                sh "podman push ${ARTIFACTORY_URL}/${IMAGE_NAME}:${IMAGE_TAG} --tls-verify=false"
 				echo "pushed image"
             }
         }
