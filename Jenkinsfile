@@ -3,7 +3,7 @@ pipeline {
 	environment {
         IMAGE_NAME = 'demo-app'
         IMAGE_TAG = "${BUILD_NUMBER}"
-		ARTIFACTORY_URL="http://host.containers.internal:8082/artifactory/docker-local"
+		ARTIFACTORY_URL="http://host.containers.internal:8082/ui/docker-local"  //http://localhost:8082/ui/docker-local/
 	    ARTIFACTORY_CREDS = "artifactory-creds"
     }
     stages {
