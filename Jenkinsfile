@@ -3,7 +3,7 @@ pipeline {
 	environment {
         IMAGE_NAME = 'demo-app'
         IMAGE_TAG = "${BUILD_NUMBER}"
-		ARTIFACTORY_URL="http://host.containers.internal:8082/artifactory/docker-local"
+		ARTIFACTORY_URL="http://host.containers.internal:8081/artifactory/docker-local"
 	    ARTIFACTORY_CREDS = "artifactory-creds"
     }
     stages {
@@ -22,7 +22,8 @@ pipeline {
             steps {
 				sh 'cd /var/jenkins_home/workspace/demo_pipeline'
                 sh 'podman build -t ${IMAGE_NAME}:${IMAGE_TAG} .'   //podman build command builds the image by tagging image with name and buildnumber, . sends all files to Daemon to execute
-                sh 'podman images'
+                sh 'podman save ${IMAGE_NAME}:${IMAGE_TAG} -o ${IMAGE_NAME}-${IMAGE_TAG}.tar'
+				sh 'podman images'
             }
         }
 		stage('Upload to Artifactory') {
