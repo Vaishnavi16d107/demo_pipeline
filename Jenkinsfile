@@ -3,6 +3,7 @@ pipeline {
 	environment {
         IMAGE_NAME = 'demo-app'
         IMAGE_TAG = "${BUILD_NUMBER}"
+		ARTIFACTORY_URL="http://host.containers.internal:8082/artifactory/docker-local"
 	    ARTIFACTORY_CREDS = "artifactory-creds"
     }
     stages {
@@ -24,34 +25,25 @@ pipeline {
                 sh 'podman images'
             }
         }
-		stage('Login to Artifactory') {
+		stage('Upload to Artifactory') {
 		    steps {
-				script{
-					       env.ARTIFACTORY_URL=sh(script: 'hostname -I | awk "{print \$1}" || echo "host.containers.internal"', returnStdout: true).trim()
-					}
 				echo "${ARTIFACTORY_URL}"
                 withCredentials([usernamePassword(
                     credentialsId: "${ARTIFACTORY_CREDS}",
                     usernameVariable: 'ART_USER',
                     passwordVariable: 'ART_PASS'
-                )]) {
+                )]) { 
+					//uploadig image.tar file  to artifactory oss repo
                     sh '''
-                        echo "$ART_PASS" | podman login ${ARTIFACTORY_URL}:8082 -u "$ART_USER" --password-stdin --tls-verify=false  
+                          curl -u "\${ART_USER}:\${ART_PASS}" \
+                          -T ${IMAGE_NAME}-${IMAGE_TAG}.tar \
+                          "${ARTIFACTORY_URL}"
                     '''
 					//password is securely piped for sign in ART_PASS is local inside the function
+					echo "uploaded the image"
                 }
             }
         }
-		stage('Tag Image') {
-            steps {
-                sh "podman tag ${IMAGE_NAME}:${IMAGE_TAG} ${ARTIFACTORY_URL}:8082/docker-local/${IMAGE_NAME}:${IMAGE_TAG}"
-            }
-        }
-		 stage('Push Image') {
-            steps {
-                sh "podman push ${ARTIFACTORY_URL}:8082/docker-local/${IMAGE_NAME}:${IMAGE_TAG} --tls-verify=false"
-				echo "pushed image"
-            }
-        }
+		
     }
 }
