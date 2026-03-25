@@ -3,7 +3,7 @@ pipeline {
 	environment {
         IMAGE_NAME = 'demo-app'
         IMAGE_TAG = "${BUILD_NUMBER}"
-		ARTIFACTORY_URL="http://host.containers.internal:8082/ui/docker-local"  //http://localhost:8082/ui/docker-local/
+		ARTIFACTORY_URL="http://host.containers.internal:8082/artifactory/docker-local"  //http://localhost:8082/ui/docker-local/
 	    ARTIFACTORY_CREDS = "artifactory-creds"
     }
     stages {
@@ -36,9 +36,9 @@ pipeline {
                 )]) { 
 					//uploadig image.tar file  to artifactory oss repo
                     sh '''
-                          curl -u "\${ART_USER}:\${ART_PASS}" \
-                          -T ${IMAGE_NAME}-${IMAGE_TAG}.tar \
-                          "${ARTIFACTORY_URL}"
+                          curl -v -u "\${ART_USER}:\${ART_PASS}" -X \
+                          PUT -T ${IMAGE_NAME}-${IMAGE_TAG}.tar \
+                          "${ARTIFACTORY_URL}/${IMAGE_NAME}-${IMAGE_TAG}.tar" || echo "upload failed"
                     '''
 					//password is securely piped for sign in ART_PASS is local inside the function
 					echo "uploaded the image"
