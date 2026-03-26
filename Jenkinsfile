@@ -37,7 +37,7 @@ pipeline {
                 )]) { 
 					//uploadig image.tar file  to artifactory oss repo
                     sh '''
-                          curl -v -u "\${ART_USER}:\${ART_PASS}" \
+                          curl -v -u "\${ART_USER}:\${ART_PASS}" -X \
                           PUT -T ${IMAGE_NAME}-${IMAGE_TAG}.tar \
                           "${ARTIFACTORY_URL}/${IMAGE_NAME}-${IMAGE_TAG}.tar" || echo "upload failed"
                     '''
