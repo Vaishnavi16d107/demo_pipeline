@@ -23,6 +23,7 @@ pipeline {
 				sh 'cd /var/jenkins_home/workspace/demo_pipeline'
                 sh 'podman build -t ${IMAGE_NAME}:${IMAGE_TAG} .'   //podman build command builds the image by tagging image with name and buildnumber, . sends all files to Daemon to execute
                 sh 'podman save ${IMAGE_NAME}:${IMAGE_TAG} -o ${IMAGE_NAME}-${IMAGE_TAG}.tar'
+				sh 'tar -tvvf  ${IMAGE_NAME}-${IMAGE_TAG}.tar'
 				sh 'podman images'
             }
         }
@@ -36,7 +37,7 @@ pipeline {
                 )]) { 
 					//uploadig image.tar file  to artifactory oss repo
                     sh '''
-                          curl -v -u "\${ART_USER}:\${ART_PASS}" -X \
+                          curl -v -u "\${ART_USER}:\${ART_PASS}" \
                           PUT -T ${IMAGE_NAME}-${IMAGE_TAG}.tar \
                           "${ARTIFACTORY_URL}/${IMAGE_NAME}-${IMAGE_TAG}.tar" || echo "upload failed"
                     '''
